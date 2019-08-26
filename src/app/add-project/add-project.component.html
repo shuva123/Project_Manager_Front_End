@@ -1,0 +1,187 @@
+<!-- <div class="form" style="padding-top: 50px;">
+    <div>  -->
+        <form style="padding-top: 50px;" name="projectForm" #projectForm="ngForm" (ngSubmit)="addProject(projectForm)" class="project-form">
+            <input type="hidden" name="Project_ID" #Project_ID="ngModel" [(ngModel)]="ShowProject_ID"
+            >
+          <div class="form-group row-center">
+            <label class="col-md-2"><b>Project:</b></label>
+            <input
+            style="width: 530px;" type="text"
+            name="ProjectName" #ProjectName="ngModel" [(ngModel)]="ShowProject"
+            required/>
+            <div class="validation-error" *ngIf="ProjectName.invalid && ProjectName.touched">*Project Field is Required.</div>
+          </div>
+          
+          <div class="form-group row-center">
+            <input id="chk_Dates" type="checkbox" (change)="manageDisabled()" style="margin-left: 170px;" name="chkDate">
+            <span style="padding-left: 5px;"></span>
+            <label>Set Start and End Date:</label>
+            <span style="padding-left: 5px;"></span>
+            <input [disabled]="isDisabled" id="startDate" type="text" onfocus="(this.type='date')"
+             onblur="(this.type='text')" name="Start_Date" #Start_Date="ngModel" [(ngModel)]="ShowStart_Date"
+             placeholder="Start Date" class="col-md-2"/>
+             <span style="padding-left: 10px;"></span>
+             <input [disabled]="isDisabled" id="endDate" class="col-md-2" type="text" onfocus="(this.type='date')"
+             onblur="(this.type='text')" placeholder="End Date"
+             name="End_Date" #End_Date="ngModel" [(ngModel)]="ShowEnd_Date"/>
+          </div>
+          <div class="form-group row-center">
+              <label class="col-md-2"><b>Priority:</b></label>  
+              <sub>0</sub>
+              <input type="range" name="Priority" #Priority="ngModel" [(ngModel)]="ShowPriority"
+              class="custom-range" style="width: 525px;"
+              min="0" max="30" value="0">
+              <sub>30</sub>
+          </div>
+          <div class="form-group row-center">
+              <label class="col-md-2"><b>Manager:</b></label>
+              <input id="Manager" style="width: 450px;" type="text" 
+            aria-describedby="Manager" name="Employee_Name" disabled/>
+              <input  type="hidden" 
+              id="Employee_ID" name="Employee_ID" #Employee_ID="ngModel" [(ngModel)]="empID"
+            aria-describedby="Manager"/>
+            <span style="padding-left: 10px;"></span>
+            <button id="searchBtn" type="button" class="btn btn-info" (click)="getAllUsers()">
+                Search
+            </button>
+          </div>
+
+          <div class="form-group row-center"> 
+            <button id="btnSubmit" type="submit" [disabled]="!projectForm.valid"
+            style="margin-left: 470px;width:100px;" class="btn btn-info">
+            <i class="fa fa-floppy-o"></i> Add
+            </button>
+            <span class="col-md-2"></span>
+            <button style="width:100px;" type="reset" class="btn btn-secondary" (click)="resetData(projectForm)">
+            <i class="fa fa-repeat"></i> Reset
+            </button>
+          </div>
+        </form>
+    <!-- </div> -->
+    <hr style="margin-left: 165px; width:530px;"/>
+    <div> 
+        <div class="form-group row-center">
+            <span style="width: 105px;"></span>
+            <input style="margin-left: 165px; width: 525px;"
+                type="text"
+                id="ProjectName"
+                placeholder="Search..."
+                [(ngModel)]="searchTerm"
+                aria-describedby="ProjectName"
+            />
+        </div>
+        <div class="form-group row-center">
+          <span style="margin-left: 165px;">Sort By: </span>
+          <span style="padding-left: 10px;"></span>
+          <button type="submit" (click)="sort('Start_Date')" class="btn btn-info btn-md-3 submit-btn">
+            Start Date
+          </button>
+          <span style="padding-left: 15px;"></span>
+          <button type="submit" (click)="sort('End_Date')" class="btn btn-info btn-md-3 submit-btn">
+            End Date
+          </button>
+          <span style="padding-left: 15px;"></span>
+          <button type="submit" (click)="sort('Priority')" class="btn btn-info btn-md-3 submit-btn">
+            Priority
+          </button>
+          <span style="padding-left: 15px;"></span>
+          <button (click)="sort('CompletedTaskCount')" type="submit" class="btn btn-info btn-md-3 submit-btn">
+            Completed
+          </button>
+      </div>
+      <div class="row" *ngFor="let project of projectList | projectFilter : searchTerm | orderBy: {property: column, direction: direction}">
+          <input type="hidden" name="ProjectID" value={{project.ProjectID}}/>
+        <span style="margin-left: 180px;"></span>
+        <div class="col-4" style="background-color: lightgray">
+          <div class="row">
+              <span style="padding-left: 5px;"></span>
+              <label>Project:</label>
+              <span style="padding-left: 5px;">{{project.ProjectName}}</span>
+          </div>
+          <div class="row">
+              <span style="padding-left: 5px;"></span>
+              <label>No of Tasks:</label>
+              <span style="padding-left: 5px;">{{project.TaskCount}}</span>
+              <span style="padding-left: 5px;"></span>
+              <label>Completed:</label>
+              <span style="padding-left: 5px;">{{project.CompletedTaskCount}}</span>
+          </div>
+          <div class="row">
+              <span style="padding-left: 5px;"></span>
+              <label>Start Date:</label>
+              <span style="padding-left: 5px;">{{project.Start_Date | date: 'yyyy-MM-dd'}}</span>
+              <span style="padding-left: 5px;"></span>
+              <label>End Date:</label>
+              <span style="padding-left: 5px;">{{project.End_Date | date: 'yyyy-MM-dd'}}</span>
+          </div>
+        </div>
+        <span style="padding-left: 5px;"></span>
+        <div class="col-1">
+            <div class="row">
+                <label>Priority</label>
+            </div>
+            <div class="row" style="background-color: lightgray; height:70px;">
+                <span style="padding-left: 5px;" class="col-sm-1">{{project.Priority}}</span>
+            </div>
+        </div>
+        <span style="padding-left: 5px;"></span>
+        <div class="col-1">
+          <div class="row">
+              <button *ngIf="project.IsCompleted!='Y'" type="submit" (click)="showForEdit(project.Project_ID)" 
+              style="width: 120px;" class="btn btn-info">
+                  Update
+                </button>
+          </div>
+          <br>
+          <div class="row">
+              <button type="submit" *ngIf="project.IsCompleted!='Y'" (click)="endProject(project.Project_ID)" style="width: 105px;" class="btn btn-secondary">
+                  Suspend
+                </button>
+          </div>
+        </div>
+        <hr style="border-top: dotted 1px;margin-left: 180px; width:540px;"/>
+      </div>
+    </div>
+  <!-- </div> -->
+<!-- Modal -->
+<div id="managerModal" class="modal fade" [ngStyle]="{ 'display' : isManagerModalOpen ? 'block' : 'none' , 'opacity' : 1 }" id="managerModal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Please Select Manager for Project</h5>
+          <button type="button" class="close" data-toggle="modal" (click)="resetUserModal(false)" data-target="managerModal" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <input id="searchModal" class="form-control" [(ngModel)]="searchTerm" placeholder="Search"/>   
+            <br>
+            <table class="table">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">First Name</th>
+                  <th scope="col">Last Name</th>
+                  <th scope="col">Manager Id</th>
+                  <th scope="col">Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of userList | managerFilter : searchTerm">
+                  <td>{{user.First_Name}}</td>
+                  <td>{{user.Last_Name}}</td>
+                  <td>{{user.Employee_ID}}</td>
+                  <td><button type="submit" class="btn btn-link" data-dismiss="modal" (click)="populateEmpId(user.Employee_ID,user.First_Name,user.Last_Name)">Select</button></td>
+                </tr>
+                </tbody></table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" data-target="managerModal" data-toggle="modal" class="btn btn-block btn-secondary" (click)="resetUserModal(false)" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <script>
+    $('#managerModal').on('shown.bs.modal', function () {
+  $('#searchBtn').trigger('focus')
+})
+  </script> -->

@@ -1,0 +1,83 @@
+<form class="task-form">
+<div class="form-row">
+    <div class="form-group col-md-2">
+        <input type="hidden" name="Project_ID" id="Project_ID" [(ngModel)]= "Project_ID" >
+        <input class="form-control" name="Search_By" id="Project_Search"
+         placeholder="Project Name" readonly>
+        
+       </div>
+       <button class="btn btn-success" style="border-radius:50%" (click)="openProjectModal(true)">Search</button>
+       <label>&nbsp;&nbsp;&nbsp;&nbsp;Sort :</label>
+       <div class="form-group col-md-2">
+        <button type="button" class="btn btn-block btn-info" 
+         name="Sort_By_Start_Date"(click)="sort('Start_Date')">Start Date</button>
+       </div>
+       <div class="form-group col-md-2">
+        <button type="button" class="btn btn-block btn-info" 
+         name="Sort_By_End_Date"(click)="sort('End_Date')">End Date</button>
+       </div>
+       <div class="form-group col-md-2">
+        <button type="button" class="btn btn-block btn-info" 
+         name="Sort_By_Priority" (click)="sort('Priority')">Priority</button>
+       </div>
+       <div class="form-group col-md-2">
+            <button type="button" class="btn btn-block btn-info" 
+             name="Sort_By_Status" (click)="sort('Status')">Completed</button>
+           </div>
+       </div>
+ </form>
+<table class="table table-sm table-hover">
+    <th>Task</th>
+    <th>Priority</th>
+    <th>Parent</th>
+    <th>Start</th>
+    <th>End</th>
+    <th></th>
+    <th></th>
+        <tr *ngFor="let task of taskService.taskList|taskFilterBasedOnProject:Project_ID
+        | orderBy: {property: column, direction: direction}">
+          <td>{{task.Task1}}</td>
+          <td>{{task.Priority}}</td>
+          <td>{{task.Parent_Name}}</td>
+          <td>{{task.Start_Date|date}}</td>
+          <td>{{task.End_Date|date}}</td>
+          <td>
+            <a class="btn" [routerLink]="['/update-task',task.Task_ID]" *ngIf="task.Status!='Completed'">
+              <i class="fa fa-pencil-square-o"></i>
+            </a>
+            <a class="btn text-danger" (click)="onStop(task.Task_ID)" *ngIf="task.Status!='Completed'"> 
+              <i class="fa fa-stop"></i>
+            </a>
+          </td>
+        </tr>
+ </table>
+ <div id="mdlProject" class="modal fade" role="dialog" [ngStyle]="{'display': mdlProjectIsOpen ? 'block' : 'none', 'opacity': 1}">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Project Selection Modal</h4>
+        </div>
+        <div class="modal-body">
+                <table class="table table-sm table-hover">
+                        <tr> <input class="form-control" name="Search_By"  id="Project_Search"
+                            placeholder="Search" [(ngModel)]="searchTerm"></tr>
+                    <tr *ngFor="let project of taskService.projectList|projectFilter:searchTerm">
+                        <td><b>Project Name :</b>{{project.ProjectName}}
+                             <b>Start Date :</b> {{project.Start_Date|date}}
+                             <b>End Date :</b> {{project.End_Date|date}}
+                             <b>Priority :</b> {{project.Priority}}
+                            </td>
+                        <td>
+                        <button class="btn btn-link"(click)="pickProject(project.ProjectName,project.Project_ID)">Select</button>
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="btnClose" 
+            class="btn btn-danger" data-target="mdlProject" data-toggle="modal" (click)="openProjectModal(false)"><i class="fa fa-times fa-fw"></i> Cancel</button>
+        </div>
+        </div>
+        </div>
+</div>
+

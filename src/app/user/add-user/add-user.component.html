@@ -1,0 +1,73 @@
+<form class="user-form" #userForm="ngForm"(ngSubmit)="onSubmit(userForm)">
+    <input type="hidden" name="User_ID" #User_ID="ngModel" [(ngModel)]="userService.selectedUser.User_ID">
+
+    <div class="form-row">
+        <label class="col-md-2">First Name :</label>
+      <div class="form-group col-md-10">
+        <input class="form-control" name="First_Name" placeholder="First Name" #First_Name="ngModel" [(ngModel)]="userService.selectedUser.First_Name" required>
+        <div class="validation-error" *ngIf="First_Name.invalid && First_Name.touched">This Field is Required.</div>
+      </div>
+    </div>
+    <div class="form-row">
+        <label class="col-md-2">Last Name :</label>
+      <div class="form-group col-md-10">
+        <input class="form-control" name="Last_Name" placeholder="Last Name" #Last_Name="ngModel"
+        [(ngModel)]="userService.selectedUser.Last_Name" required>
+        <div class="validation-error" *ngIf="Last_Name.invalid && Last_Name.touched">This Field is Required.</div>
+      </div>
+    </div>
+    <div class="form-row">
+        <label class="col-md-2">Employee ID :</label>
+        <div class="form-group col-md-10">
+          <input class="form-control" name="Employee_ID"  placeholder="Employee ID"  #Employee_ID="ngModel"
+          [(ngModel)]="userService.selectedUser.Employee_ID" required>
+          <div class="validation-error" *ngIf="Employee_ID.invalid && Employee_ID.touched">This Field is Required.</div>
+        </div>
+      </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <button id="btnSubmit1" type="submit" [disabled]="!userForm.valid" class="btn btn-block btn-info">
+          <i class="fa fa-floppy-o"></i> Add 
+        </button> 
+      </div>
+      <div class="form-group col-md-6">
+        <button type="button" class="btn btn-block btn-secondary" (click)="resetForm(userForm)">
+          <i class="fa fa-repeat"></i> Reset</button>
+      </div>
+    </div>
+  <hr>
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <input class="form-control" name="Search_By_First_Name"
+       placeholder="Search" [(ngModel)]="searchTerm">
+     </div>
+     <label>&nbsp;&nbsp;&nbsp;&nbsp;Sort :</label>
+     <div class="form-group col-md-2">
+      <button type="button" class="btn btn-block btn-info" 
+       name="Sort_By_First_Name"(click)="sort('First_Name')">First Name</button>
+     </div>
+     <div class="form-group col-md-2">
+      <button type="button" class="btn btn-block btn-info" 
+       name="Sort_By_Last_Name"(click)="sort('Last_Name')">Last Name</button>
+     </div>
+     <div class="form-group col-md-2">
+      <button type="button" class="btn btn-block btn-info" 
+       name="Sort_By_Employee_ID" (click)="sort('Employee_ID')">ID</button>
+     </div>
+    </div>
+  <table class="table table-sm table-hover">
+    <tr *ngFor="let user of userService.userList|userFilter:searchTerm
+    | orderBy: {property: column, direction: direction}">
+      <td>{{user.First_Name}} - {{user.Last_Name}}</td>
+      <td>{{user.Employee_ID}}</td>
+      <td>
+        <a class="btn" (click)="showForEdit(user)">
+          <i class="fa fa-pencil-square-o"></i>
+        </a>
+        <a class="btn text-danger" (click)="onDelete(user.User_ID)">
+          <i class="fa fa-trash-o"></i>
+        </a>
+      </td>
+    </tr>
+  </table>
+</form>

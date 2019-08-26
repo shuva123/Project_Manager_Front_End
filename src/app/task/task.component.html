@@ -1,0 +1,169 @@
+<form class="user-form" #taskForm="ngForm" >
+<!-- (ngSubmit)="onSubmit(taskForm)"> -->
+    <input type="hidden" name="User_ID" id="User_ID" [(ngModel)]= "userId">
+    <input type="hidden" name="Project_ID" id="Project_ID" [(ngModel)]= "projectId" >
+    <input type="hidden" name="Parent_ID" id="Parent_Task_ID" [(ngModel)]= "parentTaskId">
+    <input type="hidden" name="Parent_Task1" id="Parent_Task_Name" [(ngModel)]= "parentTask">
+    <input type="hidden" name="Status" id="Status" [(ngModel)]= "status">
+     <!-- #User_ID="ngModel [(ngModel)]="taskService.selectedTask.User_ID"> -->
+
+    <div class="form-row">
+    <label class="col-md-2">Project :</label>
+      <div class="form-group col-md-8">        
+        <input class="form-control" name="ProjectName" placeholder="Project Name"
+        id="txt_ProjectName" readonly required>
+         <!-- #First_Name="ngModel" [(ngModel)]="userService.selectedUser.First_Name" > -->
+        <!-- <div class="validation-error" *ngIf="Project.invalid && Project.touched">This Field is Required.</div> -->
+      </div>
+      <div class="form-group col-md-2">        
+            <button class="btn btn-info"style="border-radius:50%" (click)="openProjectModal(true)" [disabled]="isDisabled">Search</button>
+      </div>
+    </div>
+    <div class="form-row">
+        <label class="col-md-2">Task :</label>
+        <div class="form-group col-md-10">        
+        <input class="form-control" name="Task1" placeholder="Task Name" #Task1="ngModel"
+        [(ngModel)]="taskService.selectedTask.Task1" id="task_name" required>
+        <div class="validation-error" *ngIf="Task1.invalid && Task1.touched">This Field is Required.</div>
+        </div>
+    </div>
+    <div class="form-row">
+            <span class="col-md-2"></span>
+            <div class="form-group col-md-6">        
+            <span><input type="checkbox" id="chkParent" name="Task" (change)="disableFields()"> Parent Task</span>
+            </div>
+    </div>
+    <div class="form-row">
+        <label class="col-md-2">Priority :</label>
+        <div class="form-group col-md-9">        
+        <input class="form-control" type="range" name="Priority" min="0" max="15"
+        value="0" #Priority="ngModel" [(ngModel)]="taskService.selectedTask.Priority" [disabled]="isDisabled">   
+    </div>
+    </div>
+    <div class="form-row">
+        <label class="col-md-2">Parent Task :</label>
+            <div class="form-group col-md-8">        
+            <input class="form-control" name="Parent_Task" placeholder="Parent Task" 
+            id="txt_ParentTaskName" [disabled]="isDisabled" readonly required>
+            <!-- <div class="validation-error" *ngIf="Project.invalid && Project.touched">This Field is Required.</div> -->
+            </div>
+            <div class="form-group col-md-2">        
+                <button class="btn btn-info"style="border-radius:50%" (click)="openParentTaskModal(true)"  [disabled]="isDisabled">Search</button>
+            </div>
+    </div>
+    <div class="form-row">
+            <label class="col-md-2">Start Date :</label>
+            <div class="form-group col-md-10">  
+                <input class="col-md-4" type="text" onfocus="(this.type='date')"
+                onblur="(this.type='text')" name="Start_Date" type="date" [(ngModel)]="today" [disabled]="isDisabled">
+                <label class="col-md-2">End Date :</label>
+                <input class="col-md-4" type="text" onfocus="(this.type='date')"
+                onblur="(this.type='text')" name="End_Date" type="date" id="end_date" #End_Date="ngModel" [(ngModel)]="tomorrow" [disabled]="isDisabled" required>
+            </div>
+    </div>
+    <div class="form-row">
+            <label class="col-md-2">User :</label>
+                <div class="form-group col-md-8">        
+                <input class="form-control" name="User" placeholder="User" id="txt_UserName" [disabled]="isDisabled" readonly required>
+                <!-- <div class="validation-error" *ngIf="Project.invalid && Project.touched">This Field is Required.</div> -->
+                </div>
+                <div class="form-group col-md-2">        
+                    <button class="btn btn-info"style="border-radius:50%"(click)="openUserModal(true)" [disabled]="isDisabled">Search</button>
+                </div>
+        </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <button id="btn_Submit" type="button" class="btn btn-block btn-info" (click)="onSubmit(taskForm)">
+        <i class="fa fa-floppy-o"></i> Add
+        </button>
+      </div>
+      <div class="form-group col-md-6">
+        <button type="button" class="btn btn-block btn-secondary" (click)="resetForm(userForm)">
+          <i class="fa fa-repeat"></i> Reset</button>
+      </div>
+    </div>
+</form>
+
+<div id="mdlProject" class="modal fade" role="dialog" [ngStyle]="{'display': mdlProjectIsOpen ? 'block' : 'none', 'opacity': 1}">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Project Selection Modal</h4>
+        </div>
+        <div class="modal-body">
+                <table class="table table-sm table-hover">
+                        <tr> <input class="form-control" name="Search_By"  id="Project_Search"
+                            placeholder="Search" [(ngModel)]="searchTerm"></tr>
+                    <tr *ngFor="let project of taskService.projectList|projectFilter:searchTerm">
+                        <td><b>Project Name :</b>{{project.ProjectName}}
+                             <b>Start Date :</b> {{project.Start_Date|date}}
+                             <b>End Date :</b> {{project.End_Date|date}}
+                             <b>Priority :</b> {{project.Priority}}
+                            </td>
+                        <td>
+                        <button class="btn btn-link"(click)="pickProject(project.ProjectName,project.Project_ID)">Select</button>
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="btnClose" 
+            class="btn btn-danger" data-target="mdlProject" data-toggle="modal" (click)="openProjectModal(false)"><i class="fa fa-times fa-fw"></i> Cancel</button>
+        </div>
+        </div>
+        </div>
+</div>
+<div id="mdlUser" class="modal fade" role="dialog" [ngStyle]="{'display': mdlUserIsOpen ? 'block' : 'none', 'opacity': 1}">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">User Selection Modal</h4>
+                </div>
+    <div class="modal-body">
+        <table class="table table-sm table-hover">
+                <tr> <input class="form-control" name="Search_By_First_Name"
+                    id="User_Search" placeholder="Search" [(ngModel)]="searchTerm"></tr>
+        <tr *ngFor="let user of userService.userList| userFilter:searchTerm">
+            <td><b>First Name :</b>{{user.First_Name}}
+                    <b>Last Name :</b> {{user.Last_Name}}
+                    <b>Employee ID :</b> {{user.Employee_ID}}
+                </td>
+            <td>
+            <button class="btn btn-link"(click)="pickUser(user.First_Name,user.Last_Name,user.User_ID)">Select</button>
+            </td>
+        </tr>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="btnClose" 
+        class="btn btn-danger" (click)="openUserModal(false)"><i class="fa fa-times fa-fw"></i> Cancel</button>
+    </div>
+</div>
+</div>
+</div>
+
+<div id="mdlParentTask" class="modal fade" role="dialog" [ngStyle]="{'display': mdlParentTaskIsOpen ? 'block' : 'none', 'opacity': 1}">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Parent Task Selection Modal</h4>
+                </div>
+    <div class="modal-body">
+        <table class="table table-sm table-hover">
+                <tr> <input class="form-control" name="Search_By" id="Parent_Task_Search"
+                    placeholder="Search" [(ngModel)]="searchTerm"></tr>
+        <tr *ngFor="let task of taskService.parentTaskList| taskFilter:searchTerm">
+            <td><b>Task Name :</b>{{task.Parent_Task1}} </td>
+            <td>
+            <button class="btn btn-link"(click)="pickParentTask(task.Parent_Task1,task.Parent_ID)">Select</button>
+            </td>
+        </tr>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="btnClose" 
+        class="btn btn-danger" (click)="openParentTaskModal(false)"><i class="fa fa-times fa-fw"></i> Cancel</button>
+    </div>
+</div>
+</div>
+</div>
